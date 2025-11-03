@@ -50,5 +50,5 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Deploy project with Maven
-        working-directory: ./src
+        working-directory: ./src/spark-create-iceberg-docker
         run: mvn clean deploy
