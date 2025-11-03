@@ -49,6 +49,10 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      - name: Deploy project with Maven
-        working-directory: ./src/spark-create-iceberg-docker
-        run: mvn clean deploy
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src/spark-create-iceberg-docker
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/sbylemans/${{ github.event.repository.name }}:latest,ghcr.io/sbylemans/${{ github.event.repository.name }}:${{ steps.tag_version.outputs.new_tag }}
