@@ -13,7 +13,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 public class Main {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     SparkSession spark = SparkSession.builder()
         .appName("YAML Schema Reader")
         .getOrCreate();
@@ -25,14 +25,7 @@ public class Main {
       StructType sparkSchema = Objects.requireNonNull(schema).toSparkSchema();
       Dataset<Row> dataFrame = spark.createDataFrame(spark.emptyDataFrame().javaRDD(), sparkSchema);
       dataFrame.writeTo(schema.name).tableProperty("format-version", "2").createOrReplace();
-    } catch (GitAPIException e) {
-      throw new RuntimeException(e);
     } finally {
-      try {
-        FileUtils.deleteDirectory(new File("/tmp/data"));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
       spark.stop();
     }
   }
