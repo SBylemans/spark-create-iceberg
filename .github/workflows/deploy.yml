@@ -18,7 +18,7 @@ jobs:
           java-version: 17
       - name: Build project with Maven
         working-directory: ./src
-        run: mvn verify
+        run: mvn clean install
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
