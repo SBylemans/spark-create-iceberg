@@ -14,13 +14,13 @@
   <artifactId>spark-create-iceberg-docker</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <repositories>
+  <distributionManagement>
     <repository>
       <id>ghcr</id>
       <name>Github container registry</name>
       <url>https://ghcr.io</url>
     </repository>
-  </repositories>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
