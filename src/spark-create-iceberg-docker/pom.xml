@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>be.bylemans</groupId>
+    <artifactId>spark-create-iceberg-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>be.bylemans</groupId>
+  <artifactId>spark-create-iceberg-docker</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>be.bylemans</groupId>
+      <artifactId>spark-create-iceberg</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+  </properties>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <overWriteReleases>false</overWriteReleases>
+              <includeScope>runtime</includeScope>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <excludeTransitive>true</excludeTransitive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>build</argument>
+                <argument>-f</argument>
+                <argument>Dockerfile</argument>
+                <argument>-t</argument>
+                <argument>
+                  ghcr.io/sbylemans/spark-create-iceberg:${project.version}
+                </argument>
+                <argument>-t</argument>
+                <argument>
+                  ghcr.io/sbylemans/spark-create-iceberg:latest
+                </argument>
+                <argument>.</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>push</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>push</argument>
+                <argument>
+                  ghcr.io/sbylemans/spark-create-iceberg:${project.version}
+                </argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>push-latest</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>push</argument>
+                <argument>
+                  ghcr.io/sbylemans/spark-create-iceberg:latest
+                </argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
