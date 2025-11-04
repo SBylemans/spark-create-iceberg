@@ -1,4 +1,4 @@
-name: my_schema
+name: test.test.test
 fields:
   - name: id
     type: long
