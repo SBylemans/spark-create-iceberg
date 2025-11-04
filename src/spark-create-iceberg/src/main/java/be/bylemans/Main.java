@@ -24,13 +24,13 @@ public class Main {
   public static void main(String[] args) throws Exception {
     Logger logger = LoggerFactory.getLogger(Main.class);
 
-    logger.info("Getting schema from {} - {}", args[1], args[2]);
+    logger.info("Getting schema from {} - {}", args[0], args[1]);
 
     SparkSession spark = SparkSession.builder()
         .appName("YAML Schema Reader")
         .getOrCreate();
     try (Git g = Git.cloneRepository()
-        .setURI(args[1])
+        .setURI(args[0])
         .setDirectory(new File("/tmp/data"))
         .call()) {
 
@@ -41,7 +41,7 @@ public class Main {
         e.printStackTrace();
       }
 
-      Schema schema = Schema.fromYaml("/tmp/data/%s".formatted(args[2]));
+      Schema schema = Schema.fromYaml("/tmp/data/%s".formatted(args[1]));
       StructType sparkSchema = Objects.requireNonNull(schema).toSparkSchema();
       Dataset<Row> dataFrame = spark.createDataFrame(spark.emptyDataFrame().javaRDD(), sparkSchema);
       dataFrame.writeTo(schema.name).tableProperty("format-version", "2").createOrReplace();
