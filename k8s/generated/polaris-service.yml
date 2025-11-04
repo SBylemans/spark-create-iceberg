@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: polaris
+  namespace: argo
+spec:
+  type: ExternalName
+  # https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds
+  externalName: polaris.polaris.svc.cluster.local
+  ports:
+    - name: port-1
+      port: 8181
