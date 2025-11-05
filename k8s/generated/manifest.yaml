@@ -1,57 +1,72 @@
 apiVersion: argoproj.io/v1alpha1
 kind: EventSource
 metadata:
-  name: minio
+  name: webhook
 spec:
-  minio:
-    geoparquet:
-      accessKey:
-        key: access-key
-        name: artifacts-minio
-      bucket:
-        name: geoparquet
-      endpoint: minio.gis-team.svc.cluster.local:11000
-      events:
-        - s3:ObjectCreated:Put
-      insecure: true
-      secretKey:
-        key: secret-key
-        name: artifacts-minio
-      filter:
-        suffix: ".parquet"
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
+    metadata:
+      labels:
+        foo: bar
+      annotations:
+        foo: bar
+  webhook:
+    # event-source can run multiple HTTP servers. Simply define a unique port to start a new HTTP server
+    example:
+      # port to run HTTP server on
+      port: "12000"
+      # endpoint to listen to
+      endpoint: /example
+      # HTTP request method to allow. In this case, only POST requests are accepted
+      method: POST
 
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Sensor
 metadata:
-  name: minio-sensor
+  name: spark-webhook-sensor
 spec:
   dependencies:
-    - eventName: geoparquet
-      eventSourceName: minio
-      name: geoparquet
+    - eventName: example
+      eventSourceName: webhook
+      name: create-spark
   triggers:
     - template:
-        name: minio-sensor-trigger
+        name: webhook-sensor-trigger
         argoWorkflow:
           operation: submit
           parameters:
-            - dest: spec.arguments.parameters.0.value  # Fixed typo: paramaters -> parameters
+            - dest: spec.arguments.parameters.0.value
               src:
-                dataKey: notification.0.s3.object.key
-                dependencyName: geoparquet
+                dataKey: body.git-url
+                dependencyName: create-spark
+            - dest: spec.arguments.parameters.1.value
+              src:
+                dataKey: body.metadata-file
+                dependencyName: create-spark
           source:
             resource:  # Removed duplicate 'source' key
               apiVersion: argoproj.io/v1alpha1
               kind: Workflow
               metadata:
                 generateName: spark-create-iceberg-workflow-
-                namespace: team-gis
+                namespace: gis-team
               spec:
-                arguments: { }
                 entrypoint: sparkapp-operator
+                arguments:
+                  parameters:
+                      - name: giturl
+                        value: OVERRIDEN
+                      - name: metadatafile
+                        value: OVERRIDEN
                 templates:
                   - name: sparkapp-operator
+                    inputs:
+                      parameters:
+                        - name: giturl
+                        - name: metadatafile
                     resource:
                       action: create
                       manifest: |
@@ -59,34 +74,51 @@ spec:
                         kind: SparkApplication
                         metadata:
                           generateName: spark-
-                          namespace: team-gis
+                          namespace: gis-team
+                          labels:
+                            workflows.argoproj.io/workflow: {{workflow.name}}
                         spec:
+                          arguments:
+                           - {{inputs.parameters.giturl}}
+                           - {{inputs.parameters.metadatafile}}
                           type: Java
                           mode: cluster
-                          image: ghcr.io/sbylemas/spark-create-iceberg:latest
+                          image: ghcr.io/sbylemans/spark-create-iceberg:latest
                           imagePullPolicy: Always
                           mainClass: be.bylemans.Main
-                          mainApplicationFile:  local:///opt/spark/spark-create-iceberg.jar
+                          mainApplicationFile:  local:///opt/spark/jars/spark-create-iceberg.jar
                           sparkVersion: "3.5.7"
                           driver:
                             cores: 1
                             coreLimit: "1200m"
                             memory: "512m"
-                            serviceAccount: spark
                             labels:
-                              version: 3.1.1
+                              version: 3.5.7
                           executor:
                             cores: 1
                             instances: 1
                             memory: "512m"
                             labels:
-                              version: 3.1.1
+                              version: 3.5.7
                           hadoopConf:
-                            fs.s3.connection.timeout=6000
-                            fs.s3.endpoint=http://minio:11000
-                            fs.s3.access.key=local-access
-                            fs.s3.secret.key=local-secret
-                            fs.s3.path.style.access=true
-                            fs.s3.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
-                            fs.s3.aws.credentials.provider=org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
+                            "fs.s3.connection.timeout": "6000"
+                            "fs.s3.endpoint": http://minio:11000
+                            "fs.s3.access.key": local-access
+                            "fs.s3.secret.key": local-secret
+                            "fs.s3.path.style.access": "true"
+                            "fs.s3.impl": org.apache.hadoop.fs.s3a.S3AFileSystem
+                            "fs.s3.aws.credentials.provider": org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
                           sparkConf:
+                            "spark.executor.extraJavaOptions": "-Dcom.amazonaws.services.s3.enableV4=true -Daws.region=us-east-1"
+                            "spark.driver.extraJavaOptions": "-Dcom.amazonaws.services.s3.enableV4=true -Daws.region=us-east-1"
+                            "spark.sql.extensions": org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+                            "spark.sql.catalog.test": org.apache.iceberg.spark.SparkCatalog
+                            "spark.sql.catalog.test.uri": "http://polaris:8181/api/catalog"
+                            "spark.sql.catalog.test.type": "rest"
+                            "spark.sql.catalog.test.warehouse": "test"
+                            "spark.sql.catalog.test.io-impl": org.apache.iceberg.aws.s3.S3FileIO
+                            "spark.sql.catalog.test.credential": "root:s3cr3t"
+                            "spark.sql.catalog.test.scope": "PRINCIPAL_ROLE:ALL"
+                            "spark.sql.catalog.test.header.X-Iceberg-Access-Delegation": "vended-credentials"
+                            "spark.sql.catalog.test.token-refresh-enabled": "true"
+                            "spark.sql.catalog.test.cache-enabled": "false"

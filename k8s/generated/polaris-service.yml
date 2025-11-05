@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: polaris
-  namespace: argo
+  namespace: gis-team
 spec:
   type: ExternalName
   # https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds
