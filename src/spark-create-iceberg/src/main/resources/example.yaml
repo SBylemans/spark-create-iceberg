@@ -1,0 +1,66 @@
+name: test.test.example
+fields:
+  - name: id
+    type: long
+    nullable: false
+    metadata: '{"path": "id", "physical_type": "INT64", "logical_type": "None", "compression": "SNAPPY", "space_saved": 42}'
+  - name: oidn
+    type: double
+    nullable: true
+    metadata: '{"path": "oidn", "physical_type": "DOUBLE", "logical_type": "None", "compression": "SNAPPY", "space_saved": 42}'
+  - name: uidn
+    type: double
+    nullable: true
+    metadata: '{"path": "uidn", "physical_type": "DOUBLE", "logical_type": "None", "compression": "SNAPPY", "space_saved": 42}'
+  - name: versdatum
+    type: integer
+    nullable: true
+    metadata: '{"path": "versdatum", "physical_type": "INT32", "logical_type": "Date", "compression": "SNAPPY", "space_saved": -9}'
+  - name: terrid
+    type: long
+    nullable: true
+    metadata: '{"path": "terrid", "physical_type": "INT64", "logical_type": "None", "compression": "SNAPPY", "space_saved": 42}'
+  - name: niscode
+    type: string
+    nullable: true
+    metadata: '{"path": "niscode", "physical_type": "BYTE_ARRAY", "logical_type": "String", "compression": "SNAPPY", "space_saved": 42}'
+  - name: naam
+    type: string
+    nullable: true
+    metadata: '{"path": "naam", "physical_type": "BYTE_ARRAY", "logical_type": "String", "compression": "SNAPPY", "space_saved": 22}'
+  - name: datpublbs
+    type: integer
+    nullable: true
+    metadata: '{"path": "datpublbs", "physical_type": "INT32", "logical_type": "Date", "compression": "SNAPPY", "space_saved": -2}'
+  - name: numac
+    type: string
+    nullable: true
+    metadata: '{"path": "numac", "physical_type": "BYTE_ARRAY", "logical_type": "String", "compression": "SNAPPY", "space_saved": 30}'
+  - name: shape_leng
+    type: double
+    nullable: true
+    metadata: '{"path": "shape_leng", "physical_type": "DOUBLE", "logical_type": "None", "compression": "SNAPPY", "space_saved": 20}'
+  - name: shape_area
+    type: double
+    nullable: true
+    metadata: '{"path": "shape_area", "physical_type": "DOUBLE", "logical_type": "None", "compression": "SNAPPY", "space_saved": 9}'
+  - name: geom
+    type: binary
+    nullable: true
+    metadata: '{"path": "geom", "physical_type": "BYTE_ARRAY", "logical_type": "None", "compression": "SNAPPY", "space_saved": 31}'
+  - name: xmin
+    type: float
+    nullable: true
+    metadata: '{"path": "geom_bbox.xmin", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
+  - name: ymin
+    type: float
+    nullable: true
+    metadata: '{"path": "geom_bbox.ymin", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
+  - name: xmax
+    type: float
+    nullable: true
+    metadata: '{"path": "geom_bbox.xmax", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
+  - name: ymax
+    type: float
+    nullable: true
+    metadata: '{"path": "geom_bbox.ymax", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
