@@ -48,19 +48,3 @@ fields:
     type: binary
     nullable: true
     metadata: '{"path": "geom", "physical_type": "BYTE_ARRAY", "logical_type": "None", "compression": "SNAPPY", "space_saved": 31}'
-  - name: xmin
-    type: float
-    nullable: true
-    metadata: '{"path": "geom_bbox.xmin", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
-  - name: ymin
-    type: float
-    nullable: true
-    metadata: '{"path": "geom_bbox.ymin", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
-  - name: xmax
-    type: float
-    nullable: true
-    metadata: '{"path": "geom_bbox.xmax", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
-  - name: ymax
-    type: float
-    nullable: true
-    metadata: '{"path": "geom_bbox.ymax", "physical_type": "FLOAT", "logical_type": "None", "compression": "SNAPPY", "space_saved": -1}'
