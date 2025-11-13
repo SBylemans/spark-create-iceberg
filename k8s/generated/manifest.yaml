@@ -89,12 +89,16 @@ spec:
                           mainApplicationFile:  local:///opt/spark/jars/spark-create-iceberg.jar
                           sparkVersion: "3.5.7"
                           driver:
+                            labels:
+                              workflows.argoproj.io/workflow: "{{workflow.name}}"
                             cores: 1
                             coreLimit: "1200m"
                             memory: "512m"
                             labels:
                               version: 3.5.7
                           executor:
+                            labels:
+                              workflows.argoproj.io/workflow: "{{workflow.name}}"
                             cores: 1
                             instances: 1
                             memory: "512m"

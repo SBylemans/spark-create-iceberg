@@ -1,0 +1,6 @@
+name: test.test.example2
+fields:
+  - name: id2
+    type: long
+    nullable: false
+    metadata: '{"path": "id", "physical_type": "INT64", "logical_type": "None", "compression": "SNAPPY", "space_saved": 42}'
